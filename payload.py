@@ -1,30 +1,28 @@
 import bpy
-import sys
-import os
-import imp
 
 print("--------------------------------------------------")
-print("FULL SCENE RESET & REBUILD (Final Fix)")
+print("CLEARING ROTATION OF WALK PATHS")
 print("--------------------------------------------------")
 
-sys.path.append("/Users/joem/.gemini/antigravity/scratch/blender_bridge")
+# 1. Deselect All
+bpy.ops.object.select_all(action='DESELECT')
 
-# 1. Reset Scene
-bpy.ops.object.select_all(action='SELECT')
-bpy.ops.object.delete()
+# 2. Select Objects starting with "WalkPath"
+paths = []
+for obj in bpy.data.objects:
+    if obj.name.startswith("WalkPath"):
+        obj.select_set(True)
+        paths.append(obj)
 
-# 2. Spider Assembly
-try:
-    import create_spider_assembly
-    imp.reload(create_spider_assembly)
-    create_spider_assembly.create_spider_assembly()
-except Exception as e:
-    print(f"Assembly Error: {e}")
-
-# 3. Path & Animation (With Fix)
-try:
-    import create_path
-    imp.reload(create_path)
-    create_path.create_circular_path()
-except Exception as e:
-    print(f"Path Error: {e}")
+if paths:
+    print(f"Selected {len(paths)} paths: {[p.name for p in paths]}")
+    
+    # Set active object
+    bpy.context.view_layer.objects.active = paths[0]
+    
+    # 3. Clear Rotation (Alt + R)
+    bpy.ops.object.rotation_clear(clear_delta=False)
+    
+    print("Rotation cleared successfully.")
+else:
+    print("No WalkPaths found.")
