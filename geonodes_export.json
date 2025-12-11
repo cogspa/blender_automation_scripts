@@ -1,0 +1,1098 @@
+{
+  "name": "VoronoiCity_V5",
+  "blender_version": "5.0.0 Beta",
+  "interface": {
+    "inputs": [
+      {
+        "name": "Geometry",
+        "type": "NodeSocketGeometry"
+      },
+      {
+        "name": "Resolution",
+        "type": "NodeSocketInt"
+      },
+      {
+        "name": "Distortion",
+        "type": "NodeSocketFloat"
+      },
+      {
+        "name": "Inset Amount",
+        "type": "NodeSocketFloat"
+      },
+      {
+        "name": "Height Scale",
+        "type": "NodeSocketFloat"
+      },
+      {
+        "name": "Height Amp",
+        "type": "NodeSocketFloat"
+      },
+      {
+        "name": "Seed",
+        "type": "NodeSocketInt"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Geometry",
+        "type": "NodeSocketGeometry"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "name": "Group Input",
+      "type": "GROUP_INPUT",
+      "label": "",
+      "location": [
+        -1600.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "Resolution",
+          "type": "INT"
+        },
+        {
+          "index": 2,
+          "name": "Distortion",
+          "type": "VALUE"
+        },
+        {
+          "index": 3,
+          "name": "Inset Amount",
+          "type": "VALUE"
+        },
+        {
+          "index": 4,
+          "name": "Height Scale",
+          "type": "VALUE"
+        },
+        {
+          "index": 5,
+          "name": "Height Amp",
+          "type": "VALUE"
+        },
+        {
+          "index": 6,
+          "name": "Seed",
+          "type": "INT"
+        },
+        {
+          "index": 7,
+          "name": "",
+          "type": "CUSTOM"
+        }
+      ]
+    },
+    {
+      "name": "Group Output",
+      "type": "GROUP_OUTPUT",
+      "label": "",
+      "location": [
+        1600.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "",
+          "type": "CUSTOM"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "name": "Grid",
+      "type": "MESH_PRIMITIVE_GRID",
+      "label": "",
+      "location": [
+        -1400.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Size X",
+          "type": "VALUE"
+        },
+        {
+          "index": 1,
+          "name": "Size Y",
+          "type": "VALUE"
+        },
+        {
+          "index": 2,
+          "name": "Vertices X",
+          "type": "INT"
+        },
+        {
+          "index": 3,
+          "name": "Vertices Y",
+          "type": "INT"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Mesh",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "UV Map",
+          "type": "VECTOR"
+        }
+      ]
+    },
+    {
+      "name": "Set Position",
+      "type": "SET_POSITION",
+      "label": "",
+      "location": [
+        -1200.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "Selection",
+          "type": "BOOLEAN"
+        },
+        {
+          "index": 2,
+          "name": "Position",
+          "type": "VECTOR"
+        },
+        {
+          "index": 3,
+          "name": "Offset",
+          "type": "VECTOR"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        }
+      ]
+    },
+    {
+      "name": "Noise Texture",
+      "type": "TEX_NOISE",
+      "label": "",
+      "location": [
+        -1400.0,
+        -300.0
+      ],
+      "width": 145.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 1,
+          "name": "W",
+          "type": "VALUE"
+        },
+        {
+          "index": 2,
+          "name": "Scale",
+          "type": "VALUE"
+        },
+        {
+          "index": 3,
+          "name": "Detail",
+          "type": "VALUE"
+        },
+        {
+          "index": 4,
+          "name": "Roughness",
+          "type": "VALUE"
+        },
+        {
+          "index": 5,
+          "name": "Lacunarity",
+          "type": "VALUE"
+        },
+        {
+          "index": 6,
+          "name": "Offset",
+          "type": "VALUE"
+        },
+        {
+          "index": 7,
+          "name": "Gain",
+          "type": "VALUE"
+        },
+        {
+          "index": 8,
+          "name": "Distortion",
+          "type": "VALUE"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Factor",
+          "type": "VALUE"
+        },
+        {
+          "index": 1,
+          "name": "Color",
+          "type": "RGBA"
+        }
+      ]
+    },
+    {
+      "name": "Vector Math",
+      "type": "VECT_MATH",
+      "label": "",
+      "location": [
+        0.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 1,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 2,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 3,
+          "name": "Scale",
+          "type": "VALUE"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 1,
+          "name": "Value",
+          "type": "VALUE"
+        }
+      ]
+    },
+    {
+      "name": "Vector Math.001",
+      "type": "VECT_MATH",
+      "label": "",
+      "location": [
+        0.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 1,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 2,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 3,
+          "name": "Scale",
+          "type": "VALUE"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 1,
+          "name": "Value",
+          "type": "VALUE"
+        }
+      ]
+    },
+    {
+      "name": "Vector Math.002",
+      "type": "VECT_MATH",
+      "label": "",
+      "location": [
+        0.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 1,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 2,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 3,
+          "name": "Scale",
+          "type": "VALUE"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 1,
+          "name": "Value",
+          "type": "VALUE"
+        }
+      ]
+    },
+    {
+      "name": "Triangulate",
+      "type": "TRIANGULATE",
+      "label": "",
+      "location": [
+        -1000.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Mesh",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "Selection",
+          "type": "BOOLEAN"
+        },
+        {
+          "index": 2,
+          "name": "Quad Method",
+          "type": "MENU"
+        },
+        {
+          "index": 3,
+          "name": "N-gon Method",
+          "type": "MENU"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Mesh",
+          "type": "GEOMETRY"
+        }
+      ]
+    },
+    {
+      "name": "Dual Mesh",
+      "type": "DUAL_MESH",
+      "label": "",
+      "location": [
+        -800.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Mesh",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "Keep Boundaries",
+          "type": "BOOLEAN"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Dual Mesh",
+          "type": "GEOMETRY"
+        }
+      ]
+    },
+    {
+      "name": "Set Material",
+      "type": "SET_MATERIAL",
+      "label": "Set Ground Material",
+      "location": [
+        500.0,
+        -200.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "Selection",
+          "type": "BOOLEAN"
+        },
+        {
+          "index": 2,
+          "name": "Material",
+          "type": "MATERIAL"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        }
+      ]
+    },
+    {
+      "name": "Transform Geometry",
+      "type": "TRANSFORM_GEOMETRY",
+      "label": "",
+      "location": [
+        300.0,
+        -200.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "Mode",
+          "type": "MENU"
+        },
+        {
+          "index": 2,
+          "name": "Translation",
+          "type": "VECTOR"
+        },
+        {
+          "index": 3,
+          "name": "Rotation",
+          "type": "ROTATION"
+        },
+        {
+          "index": 4,
+          "name": "Scale",
+          "type": "VECTOR"
+        },
+        {
+          "index": 5,
+          "name": "Transform",
+          "type": "MATRIX"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        }
+      ]
+    },
+    {
+      "name": "Scale Elements",
+      "type": "SCALE_ELEMENTS",
+      "label": "",
+      "location": [
+        -600.0,
+        200.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "Selection",
+          "type": "BOOLEAN"
+        },
+        {
+          "index": 2,
+          "name": "Scale",
+          "type": "VALUE"
+        },
+        {
+          "index": 3,
+          "name": "Center",
+          "type": "VECTOR"
+        },
+        {
+          "index": 4,
+          "name": "Scale Mode",
+          "type": "MENU"
+        },
+        {
+          "index": 5,
+          "name": "Axis",
+          "type": "VECTOR"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        }
+      ]
+    },
+    {
+      "name": "Math",
+      "type": "MATH",
+      "label": "",
+      "location": [
+        0.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Value",
+          "type": "VALUE"
+        },
+        {
+          "index": 1,
+          "name": "Value",
+          "type": "VALUE"
+        },
+        {
+          "index": 2,
+          "name": "Value",
+          "type": "VALUE"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Value",
+          "type": "VALUE"
+        }
+      ]
+    },
+    {
+      "name": "Extrude Mesh",
+      "type": "EXTRUDE_MESH",
+      "label": "",
+      "location": [
+        -300.0,
+        200.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Mesh",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "Selection",
+          "type": "BOOLEAN"
+        },
+        {
+          "index": 2,
+          "name": "Offset",
+          "type": "VECTOR"
+        },
+        {
+          "index": 3,
+          "name": "Offset Scale",
+          "type": "VALUE"
+        },
+        {
+          "index": 4,
+          "name": "Individual",
+          "type": "BOOLEAN"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Mesh",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "Top",
+          "type": "BOOLEAN"
+        },
+        {
+          "index": 2,
+          "name": "Side",
+          "type": "BOOLEAN"
+        }
+      ]
+    },
+    {
+      "name": "Noise Texture.001",
+      "type": "TEX_NOISE",
+      "label": "",
+      "location": [
+        -600.0,
+        500.0
+      ],
+      "width": 145.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Vector",
+          "type": "VECTOR"
+        },
+        {
+          "index": 1,
+          "name": "W",
+          "type": "VALUE"
+        },
+        {
+          "index": 2,
+          "name": "Scale",
+          "type": "VALUE"
+        },
+        {
+          "index": 3,
+          "name": "Detail",
+          "type": "VALUE"
+        },
+        {
+          "index": 4,
+          "name": "Roughness",
+          "type": "VALUE"
+        },
+        {
+          "index": 5,
+          "name": "Lacunarity",
+          "type": "VALUE"
+        },
+        {
+          "index": 6,
+          "name": "Offset",
+          "type": "VALUE"
+        },
+        {
+          "index": 7,
+          "name": "Gain",
+          "type": "VALUE"
+        },
+        {
+          "index": 8,
+          "name": "Distortion",
+          "type": "VALUE"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Factor",
+          "type": "VALUE"
+        },
+        {
+          "index": 1,
+          "name": "Color",
+          "type": "RGBA"
+        }
+      ]
+    },
+    {
+      "name": "Position",
+      "type": "POSITION",
+      "label": "",
+      "location": [
+        -800.0,
+        500.0
+      ],
+      "width": 140.0,
+      "inputs": [],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Position",
+          "type": "VECTOR"
+        }
+      ]
+    },
+    {
+      "name": "Math.001",
+      "type": "MATH",
+      "label": "",
+      "location": [
+        0.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Value",
+          "type": "VALUE"
+        },
+        {
+          "index": 1,
+          "name": "Value",
+          "type": "VALUE"
+        },
+        {
+          "index": 2,
+          "name": "Value",
+          "type": "VALUE"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Value",
+          "type": "VALUE"
+        }
+      ]
+    },
+    {
+      "name": "Math.002",
+      "type": "MATH",
+      "label": "",
+      "location": [
+        0.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Value",
+          "type": "VALUE"
+        },
+        {
+          "index": 1,
+          "name": "Value",
+          "type": "VALUE"
+        },
+        {
+          "index": 2,
+          "name": "Value",
+          "type": "VALUE"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Value",
+          "type": "VALUE"
+        }
+      ]
+    },
+    {
+      "name": "Set Material.001",
+      "type": "SET_MATERIAL",
+      "label": "Set Building Material",
+      "location": [
+        500.0,
+        200.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "Selection",
+          "type": "BOOLEAN"
+        },
+        {
+          "index": 2,
+          "name": "Material",
+          "type": "MATERIAL"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        }
+      ]
+    },
+    {
+      "name": "Join Geometry",
+      "type": "JOIN_GEOMETRY",
+      "label": "",
+      "location": [
+        800.0,
+        0.0
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        }
+      ],
+      "outputs": [
+        {
+          "index": 0,
+          "name": "Geometry",
+          "type": "GEOMETRY"
+        }
+      ]
+    },
+    {
+      "name": "Viewer",
+      "type": "VIEWER",
+      "label": "",
+      "location": [
+        -76.69873046875,
+        297.5
+      ],
+      "width": 140.0,
+      "inputs": [
+        {
+          "index": 0,
+          "name": "Mesh",
+          "type": "GEOMETRY"
+        },
+        {
+          "index": 1,
+          "name": "",
+          "type": "CUSTOM"
+        }
+      ],
+      "outputs": []
+    }
+  ],
+  "links": [
+    {
+      "from_node": "Group Input",
+      "from_socket": "Resolution",
+      "to_node": "Grid",
+      "to_socket": "Vertices X"
+    },
+    {
+      "from_node": "Group Input",
+      "from_socket": "Resolution",
+      "to_node": "Grid",
+      "to_socket": "Vertices Y"
+    },
+    {
+      "from_node": "Group Input",
+      "from_socket": "Seed",
+      "to_node": "Noise Texture",
+      "to_socket": "W"
+    },
+    {
+      "from_node": "Noise Texture",
+      "from_socket": "Factor",
+      "to_node": "Vector Math",
+      "to_socket": "Vector"
+    },
+    {
+      "from_node": "Vector Math",
+      "from_socket": "Vector",
+      "to_node": "Vector Math.001",
+      "to_socket": "Vector"
+    },
+    {
+      "from_node": "Group Input",
+      "from_socket": "Distortion",
+      "to_node": "Vector Math.001",
+      "to_socket": "Scale"
+    },
+    {
+      "from_node": "Vector Math.001",
+      "from_socket": "Vector",
+      "to_node": "Vector Math.002",
+      "to_socket": "Vector"
+    },
+    {
+      "from_node": "Grid",
+      "from_socket": "Mesh",
+      "to_node": "Set Position",
+      "to_socket": "Geometry"
+    },
+    {
+      "from_node": "Vector Math.002",
+      "from_socket": "Vector",
+      "to_node": "Set Position",
+      "to_socket": "Position"
+    },
+    {
+      "from_node": "Set Position",
+      "from_socket": "Geometry",
+      "to_node": "Triangulate",
+      "to_socket": "Mesh"
+    },
+    {
+      "from_node": "Triangulate",
+      "from_socket": "Mesh",
+      "to_node": "Dual Mesh",
+      "to_socket": "Mesh"
+    },
+    {
+      "from_node": "Dual Mesh",
+      "from_socket": "Dual Mesh",
+      "to_node": "Transform Geometry",
+      "to_socket": "Geometry"
+    },
+    {
+      "from_node": "Transform Geometry",
+      "from_socket": "Geometry",
+      "to_node": "Set Material",
+      "to_socket": "Geometry"
+    },
+    {
+      "from_node": "Group Input",
+      "from_socket": "Inset Amount",
+      "to_node": "Math",
+      "to_socket": "Value"
+    },
+    {
+      "from_node": "Dual Mesh",
+      "from_socket": "Dual Mesh",
+      "to_node": "Scale Elements",
+      "to_socket": "Geometry"
+    },
+    {
+      "from_node": "Math",
+      "from_socket": "Value",
+      "to_node": "Scale Elements",
+      "to_socket": "Scale"
+    },
+    {
+      "from_node": "Scale Elements",
+      "from_socket": "Geometry",
+      "to_node": "Extrude Mesh",
+      "to_socket": "Mesh"
+    },
+    {
+      "from_node": "Group Input",
+      "from_socket": "Height Scale",
+      "to_node": "Noise Texture.001",
+      "to_socket": "Scale"
+    },
+    {
+      "from_node": "Position",
+      "from_socket": "Position",
+      "to_node": "Noise Texture.001",
+      "to_socket": "Vector"
+    },
+    {
+      "from_node": "Noise Texture.001",
+      "from_socket": "Factor",
+      "to_node": "Math.001",
+      "to_socket": "Value"
+    },
+    {
+      "from_node": "Group Input",
+      "from_socket": "Height Amp",
+      "to_node": "Math.001",
+      "to_socket": "Value"
+    },
+    {
+      "from_node": "Math.001",
+      "from_socket": "Value",
+      "to_node": "Math.002",
+      "to_socket": "Value"
+    },
+    {
+      "from_node": "Math.002",
+      "from_socket": "Value",
+      "to_node": "Extrude Mesh",
+      "to_socket": "Offset Scale"
+    },
+    {
+      "from_node": "Extrude Mesh",
+      "from_socket": "Mesh",
+      "to_node": "Set Material.001",
+      "to_socket": "Geometry"
+    },
+    {
+      "from_node": "Set Material",
+      "from_socket": "Geometry",
+      "to_node": "Join Geometry",
+      "to_socket": "Geometry"
+    },
+    {
+      "from_node": "Set Material.001",
+      "from_socket": "Geometry",
+      "to_node": "Join Geometry",
+      "to_socket": "Geometry"
+    },
+    {
+      "from_node": "Join Geometry",
+      "from_socket": "Geometry",
+      "to_node": "Group Output",
+      "to_socket": "Geometry"
+    },
+    {
+      "from_node": "Extrude Mesh",
+      "from_socket": "Mesh",
+      "to_node": "Viewer",
+      "to_socket": "Mesh"
+    }
+  ]
+}
