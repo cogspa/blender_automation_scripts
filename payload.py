@@ -5,7 +5,7 @@ import imp
 import create_spider_assembly
 
 print("--------------------------------------------------")
-print("RUNNING SPIDER ASSEMBLY (Bend Fix +45)")
+print("RUNNING SPIDER ASSEMBLY (Parenting Added)")
 print("--------------------------------------------------")
 
 sys.path.append("/Users/joem/.gemini/antigravity/scratch/blender_bridge")

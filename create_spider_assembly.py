@@ -136,18 +136,38 @@ def create_spider_assembly():
         print(f"IK Applied to bone: {target_bone.name}")
         
         # FIX BEND DIRECTION
-        # Apply rotation to the parent bone to hint the IK solver
-        # The user reported the bend was 'opposite'.
-        # Trying positive rotation to flip the knee direction.
         parent_bone = target_bone.parent
         if parent_bone:
              parent_bone.rotation_mode = 'XYZ'
-             # Try 45 degrees. If -45 was used before, 45 might be the flip.
              parent_bone.rotation_euler.x = math.radians(45)
              print(f"Applied rotation hint to {parent_bone.name}")
 
     else:
         print("Error: Could not find tip bone.")
+
+    # --------------------------------------------------------------------
+    # 7. PARENT LEG TO BODY
+    # --------------------------------------------------------------------
+    # Parent Armature -> Body
+    # Parent Leg Mesh -> Body
+    # Usually parenting the Armature is enough if the mesh is parented to armature or moved by it.
+    # The Mesh is "Skinned" to the armature.
+    
+    # User instructions: "Select Armature, Select Leg, Shift-select body, Parent Object".
+    # This means Parent BOTH Armature and Mesh to Body.
+    
+    bpy.ops.object.mode_set(mode='OBJECT')
+    
+    # 1. Parent Leg Mesh to Body
+    leg_mesh.parent = body
+    # Keeping transformation correct
+    leg_mesh.matrix_parent_inverse = body.matrix_world.inverted()
+    
+    # 2. Parent Armature to Body
+    armature.parent = body
+    armature.matrix_parent_inverse = body.matrix_world.inverted()
+    
+    print("Parented Leg Mesh and Armature to Body.")
 
 if __name__ == "__main__":
     create_spider_assembly()
