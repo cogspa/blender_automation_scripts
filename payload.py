@@ -7,7 +7,7 @@ import imp
 sys.path.append("/Users/joem/.gemini/antigravity/scratch/blender_bridge")
 
 # TRIGGER EXECUTION
-print("Running Payload to CREATE PATHLESS WALK...")
+print("Running Payload to CREATE PATHLESS WALK (Faster & Straighter)...")
 
 try:
     import create_pathless_walk

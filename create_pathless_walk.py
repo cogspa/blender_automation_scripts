@@ -32,10 +32,10 @@ def create_pathless_walk():
         # 4. Generate Walk
         total_frames = 1000
         key_interval = 20 # Keyframe every 20 frames
-        speed_per_frame = 0.05 # Units per frame
+        speed_per_frame = 0.20 # Even Faster (was 0.10)
         
         current_pos = Vector((0,0,0))
-        current_angle = 0.0 # 0 = Facing +X
+        current_angle = math.pi 
         
         # Initial Keyframe
         obj.location = current_pos
@@ -45,8 +45,8 @@ def create_pathless_walk():
         
         for f in range(1 + key_interval, total_frames, key_interval):
             # A. Random Turn
-            # Change angle by random amount (-45 to +45 deg per interval)
-            turn = math.radians(random.uniform(-45, 45))
+            # Change angle by random amount (Reduced Rotation as requested)
+            turn = math.radians(random.uniform(-10, 10)) # Was -45, 45
             current_angle += turn
             
             # B. Move Forward in New Direction
