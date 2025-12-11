@@ -1,31 +1,17 @@
 import bpy
+import sys
+import os
+import imp
 
-print("--------------------------------------------------")
-print("ADDING COPY ROTATION CONSTRAINT TO PATHS")
-print("--------------------------------------------------")
+# Add path if needed
+sys.path.append("/Users/joem/.gemini/antigravity/scratch/blender_bridge")
 
-if "Direction_Controller" not in bpy.data.objects:
-    print("Error: Direction_Controller not found!")
-else:
-    controller = bpy.data.objects["Direction_Controller"]
-    
-    # helper
-    def add_copy_rotation(obj):
-        # Check if already exists?
-        for c in obj.constraints:
-            if c.type == 'COPY_ROTATION' and c.target == controller:
-                return # Already added
-                
-        c = obj.constraints.new('COPY_ROTATION')
-        c.target = controller
-        c.name = "Steering"
-        # Defaults are usually good: Target/Owner Space World, Mix Replace, XYZ.
-        print(f"  Added Copy Rotation to {obj.name}")
+# TRIGGER EXECUTION (Run 2)
+print("Running Payload to Apply Body Noise (Attempt 2)...")
 
-    count = 0
-    for obj in bpy.data.objects:
-        if obj.name.startswith("WalkPath"):
-            add_copy_rotation(obj)
-            count += 1
-            
-    print(f"Applied Steering constraint to {count} paths.")
+try:
+    import create_body_noise
+    imp.reload(create_body_noise)
+    create_body_noise.add_body_noise()
+except Exception as e:
+    print(f"Error adding noise: {e}")
