@@ -6,12 +6,12 @@ import imp
 # Add path if needed
 sys.path.append("/Users/joem/.gemini/antigravity/scratch/blender_bridge")
 
-# TRIGGER EXECUTION (Run 2)
-print("Running Payload to Apply Body Noise (Attempt 2)...")
+# TRIGGER EXECUTION
+print("Running Payload to Create Master Controller...")
 
 try:
-    import create_body_noise
-    imp.reload(create_body_noise)
-    create_body_noise.add_body_noise()
+    import create_master_controller
+    imp.reload(create_master_controller)
+    create_master_controller.create_master_controller()
 except Exception as e:
-    print(f"Error adding noise: {e}")
+    print(f"Error creating master controller: {e}")
