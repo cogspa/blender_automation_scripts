@@ -11,42 +11,71 @@ def create_circular_path():
     # IK Target Location (Hardcoded from previous steps)
     target_loc = Vector((0, -2.4562, 0.28973))
     
-    # 4. Rotate Geometry in EDIT MODE
-    # User requested: "rotate so circle lies on x axis (rotate in z 90degrees)"
-    # Originally we rotated 90 on X (Vertical loop in YZ plane).
-    # If we rotate 90 on Z now:
-    # Original (Flat XY) -> Rot X 90 -> (Vertical YZ) -> Rot Z 90 -> (Vertical XZ).
-    # Is that what "lies on x axis" means? A loop along the leg's walking direction (usually X or Y)?
-    # Spider leg is at Y=-2.45. It probably walks forward/back in X.
-    # So the loop should be in the XZ plane.
     
-    # Scale up a bit: User requested bigger
-    radius = 0.8 # Was 0.5.
+    # 3. Create Custom "Footstep" Curve
+    # Instead of a circle, we build a D-shaped path (Flat bottom, Arched top).
+    curve_data = bpy.data.curves.new(name="WalkPathData", type='CURVE')
+    curve_data.dimensions = '3D'
     
-    # Recalculate position with new radius
-    path_loc = target_loc.copy()
-    path_loc.z -= radius
+    spline = curve_data.splines.new('BEZIER')
+    spline.use_cyclic_u = True # Closed loop
     
-    # User requested: "raise it up .5 m in z"
-    path_loc.z += 0.5
+    # Define Points for a semi-circle (D shape)
+    # We want it in XZ plane (Y=0 local).
+    # Flat bottom along X axis. Arch up in Z.
+    # Radius 0.8.
+    r = 0.8
+    h = 1.2 # Height (Raised for better arc, was 0.8/r)
+    
+    # We define 3 points: Back-Bottom, Top, Front-Bottom.
+    # Note: 1 point is created by default options, we add 2 more.
+    spline.bezier_points.add(2)
+    
+    # Point 0: Back (-r, 0, 0)
+    p0 = spline.bezier_points[0]
+    p0.co = Vector((-r, 0, 0))
+    p0.handle_left = Vector((-r, 0, 0))   # Flat bottom tangent
+    p0.handle_right = Vector((-r, 0, r))  # Going up
+    p0.handle_left_type = 'VECTOR'
+    p0.handle_right_type = 'FREE'
+    
+    # Point 1: Top (0, 0, h) -> Uses 'h' now for higher arc
+    p1 = spline.bezier_points[1]
+    p1.co = Vector((0, 0, h))
+    p1.handle_left = Vector((-r*0.5, 0, h)) 
+    p1.handle_right = Vector((r*0.5, 0, h))
+    p1.handle_left_type = 'ALIGNED'
+    p1.handle_right_type = 'ALIGNED'
 
-    bpy.ops.curve.primitive_bezier_circle_add(radius=radius, location=path_loc)
-    path = bpy.context.active_object
-    path.name = "WalkPath"
-
-    bpy.ops.object.mode_set(mode='EDIT')
-    bpy.ops.curve.select_all(action='SELECT')
+    # Point 2: Front (r, 0, 0)
+    p2 = spline.bezier_points[2]
+    p2.co = Vector((r, 0, 0))
+    p2.handle_left = Vector((r, 0, r))   # Coming down
+    p2.handle_right = Vector((r, 0, 0))  # Flat bottom tangent
+    p2.handle_left_type = 'FREE'
+    p2.handle_right_type = 'VECTOR'
     
-    # 1. Rotate 90 X (Vertical)
-    bpy.ops.transform.rotate(value=math.radians(90), orient_axis='X')
+    # Ensure Bottom Segment (P2 -> P0) is flat
+    # P2 Right Handle is (r, 0, 0) -> Points to right? 
+    # To connect P2 to P0 (which is to the left), handle should point towards P0?
+    # No, handle_right of P2 is the exit vector.
+    # If Handle Type is VECTOR, they point at the neighbor.
     
-    # 2. Rotate 90 Z (Align with X-axis / Walk Direction)
-    bpy.ops.transform.rotate(value=math.radians(90), orient_axis='Z')
+    # Position: User wants target to touch ground.
+    # Place object at Z=0 global.
+    object_loc = Vector((target_loc.x, target_loc.y, 0.0))
     
+    path = bpy.data.objects.new("WalkPath", curve_data)
+    path.location = object_loc
     
-    bpy.ops.object.mode_set(mode='OBJECT')
+    # User Request: "rotate back 90 degrees"
+    # Previously it was XZ (aligned with X). Rotating 90 Z makes it align with Y.
+    path.rotation_euler.z = math.radians(90)
     
-    print(f"Created 'WalkPath' (XZ Plane) centered at {path_loc} with radius {radius}.")
+    bpy.context.collection.objects.link(path)
+    bpy.context.view_layer.objects.active = path
+    
+    print(f"Created Custom 'WalkPath' (D-Shape) at {object_loc}, Rotated 90 Z.")
 
     # --------------------------------------------------------------------
     # 5. ATTACH IK TARGET TO PATH
