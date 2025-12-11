@@ -113,29 +113,37 @@ def create_circular_path():
         c.keyframe_insert(data_path="offset", frame=30)
         
         # Linear Extrapolation (Shift+E)
+        # UPDATED for Blender 4.3+ Layered Animation System (Recursive Search)
         if ik_target.animation_data and ik_target.animation_data.action:
             action = ik_target.animation_data.action
-            found_curve = False
             
-            print("Searching F-Curves for 'WalkConstraint'...")
-            for fcurve in action.fcurves:
-                print(f"Found FCurve: {fcurve.data_path}")
-                # Check for our specific constraint name
-                # Note: Blender might escape quotes differently sometimes, but usually straight quotes work.
-                # Data path is usually: constraints["Name"].offset
-                if 'WalkConstraint' in fcurve.data_path and 'offset' in fcurve.data_path:
-                    # 1. Set Extrapolation
-                    fcurve.extrapolation = 'LINEAR'
-                    
-                    # 2. Set Keyframe Interpolation to LINEAR (Avoids easing)
-                    for k in fcurve.keyframe_points:
-                        k.interpolation = 'LINEAR'
-                        
-                    print(f"SUCCESS: Applied LINEAR Extrapolation & Interpolation to: {fcurve.data_path}")
-                    found_curve = True
-            
-            if not found_curve:
-                print("Error: Could not find the specific F-Curve for 'WalkConstraint'.")
+            def recursive_fix(obj, visited=None):
+                if visited is None: visited = set()
+                if obj in visited: return
+                visited.add(obj)
+                
+                # Check if object mimics an FCurve (has data_path)
+                if hasattr(obj, 'data_path') and hasattr(obj, 'keyframe_points') and hasattr(obj, 'extrapolation'):
+                     # Check if it's the right curve
+                     if 'WalkConstraint' in obj.data_path and 'offset' in obj.data_path:
+                        obj.extrapolation = 'LINEAR'
+                        for k in obj.keyframe_points:
+                            k.interpolation = 'LINEAR'
+                        print(f"SUCCESS: Applied LINEAR Extrapolation to: {obj.data_path}")
+                     return
+
+                # Recurse attributes looking for collections of curves
+                search_attrs = ['layers', 'strips', 'channelbags', 'fcurves']
+                for attr in search_attrs:
+                    if hasattr(obj, attr):
+                        try:
+                            for item in getattr(obj, attr):
+                                recursive_fix(item, visited)
+                        except: pass
+
+            print("Searching F-Curves recursively...")
+            recursive_fix(action)
+
         
         print("Animated Follow Path Offset (Frame 10->30, 0->100, Linear Loop).")
     else:
