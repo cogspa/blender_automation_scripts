@@ -5,7 +5,7 @@ import imp
 import create_leg_ik
 
 print("--------------------------------------------------")
-print("RESET & RERUN REQUESTED")
+print("RESET & RERUN (Reverted to No Rotation Fix)")
 print("--------------------------------------------------")
 
 # 1. Reset
