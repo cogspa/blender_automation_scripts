@@ -1,13 +1,13 @@
 import bpy
 import random
 
-def add_body_noise():
+def add_body_noise(target_name="Spider_Body"):
     print("--------------------------------------------------")
-    print("ADDING RANDOM NOISE TO BODY (ORGANIC MOTION)")
+    print(f"ADDING RANDOM NOISE TO BODY: {target_name}")
     print("--------------------------------------------------")
 
-    if "Spider_Body" in bpy.data.objects:
-        body = bpy.data.objects["Spider_Body"]
+    if target_name in bpy.data.objects:
+        body = bpy.data.objects[target_name]
         
         # 1. Insert Initial Keyframes to create F-Curves
         # We need these to attach modifiers to.
