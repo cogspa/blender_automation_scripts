@@ -101,30 +101,6 @@ def create_swarm(count=3, range_x=80, range_y=80):
         # C. Scatter with Overlap Check
         found_spot = False
         attempts = 0
-        min_dist = 15.0 # Minimum 15 meters apart
-        
-        rx, ry = 0, 0
-        
-        while not found_spot and attempts < 100:
-            rx = random.uniform(-range_x, range_x)
-            ry = random.uniform(-range_y, range_y)
-            pos_2d = Vector((rx, ry))
-            
-            # Check dist
-            too_close = False
-            for p in spawned_positions:
-                if (p - pos_2d).length < min_dist:
-                    too_close = True
-                    break
-            
-            if not too_close:
-                found_spot = True
-            else:
-                attempts += 1
-        
-        # C. Scatter with Overlap Check
-        found_spot = False
-        attempts = 0
         min_dist = 15.0 
         
         rx, ry = 0, 0
