@@ -122,31 +122,58 @@ def create_swarm(count=3, range_x=80, range_y=80):
             else:
                 attempts += 1
         
+        # C. Scatter with Overlap Check
+        found_spot = False
+        attempts = 0
+        min_dist = 15.0 
+        
+        rx, ry = 0, 0
+        
+        while not found_spot and attempts < 100:
+            rx = random.uniform(-range_x, range_x)
+            ry = random.uniform(-range_y, range_y)
+            pos_2d = Vector((rx, ry))
+            
+            # Check dist
+            too_close = False
+            for p in spawned_positions:
+                if (p - pos_2d).length < min_dist:
+                    too_close = True
+                    break
+            
+            if not too_close:
+                found_spot = True
+            else:
+                attempts += 1
+        
         spawned_positions.append(Vector((rx, ry)))
         
-        rz = random.uniform(0, math.pi*2)
+        # DIRECTION GROUPS (Cardinal Directions)
+        # Cycle: X+, Y+, X-, Y-
+        group_idx = i % 4
+        directions = [0, math.pi/2, math.pi, 3*math.pi/2]
         
-        # Use location (not delta) for base scatter?
-        # NO, we want to set the BASE location.
-        # If we use Delta Animation, `location` is free.
+        # Add small random variation
+        rz = directions[group_idx] + random.uniform(-0.2, 0.2)
+        
         new_master.location.x = rx
         new_master.location.y = ry
         new_master.rotation_euler.z = rz
         
-        # Clear Animation Data on Duplicate?
-        # Duplicate copies animation.
-        # But create_pathless_walk REPLACES it. So it should be fine.
-        new_master.animation_data_clear() # Start fresh just in case
+        new_master.animation_data_clear() 
         
-        print(f"  Scattered to ({rx:.1f}, {ry:.1f})")
+        print(f"  Scattered to ({rx:.1f}, {ry:.1f}). Cardinal Dir: {group_idx}")
         
         # D. Reset IK Targets (in selection)
         for obj in bpy.context.selected_objects:
             if "IK_Target" in obj.name:
                 obj.location = (0,0,0)
         
+        # Force Update to ensure rotation is readable
+        bpy.context.view_layer.update()
+        
         # E. Walk
-        create_pathless_walk.create_pathless_walk(new_master.name)
+        create_pathless_walk.create_pathless_walk(new_master.name, explicit_start_angle=rz)
         
         # F. Random Body Noise
         imp.reload(create_body_noise)

@@ -3,7 +3,7 @@ import math
 import random
 from mathutils import Vector
 
-def create_pathless_walk(target_obj_name="character_controller"):
+def create_pathless_walk(target_obj_name="character_controller", explicit_start_angle=None):
     print(f"--------------------------------------------------")
     print(f"CREATING PATHLESS RANDOM WALK FOR: {target_obj_name}")
     print(f"--------------------------------------------------")
@@ -33,43 +33,88 @@ def create_pathless_walk(target_obj_name="character_controller"):
         # This allows the user to manually move the object's main Location/Rotation
         # without fighting the animation.
         
-        total_frames = 1000
+        total_frames = 3000
         key_interval = 20
         speed_per_frame = 0.20
         
         # Start Deltas at 0
         current_delta_pos = Vector((0,0,0))
-        current_delta_angle = 0.0 # Relative to base rotation
+        # Initial offset for orientation (e.g. if model faces -Y)
+        # We start walking in the direction of the Base Rotation + Offset
+        orientation_offset = math.pi 
+        current_delta_rot = orientation_offset 
         
         # Initial Keyframe
         obj.delta_location = current_delta_pos
-        obj.delta_rotation_euler.z = current_delta_angle
+        obj.delta_rotation_euler.z = current_delta_rot
         
         obj.keyframe_insert(data_path="delta_location", frame=1)
         obj.keyframe_insert(data_path="delta_rotation_euler", frame=1)
         
-        # Random initial direction (relative)
-        current_delta_angle = math.pi 
+        obj.keyframe_insert(data_path="delta_rotation_euler", frame=1)
+        
+        # Get Base Rotation (Static for the Walk)
+        if explicit_start_angle is not None:
+             base_rot_z = explicit_start_angle
+             print(f"DEBUG: Using EXPLICIT Start Angle: {math.degrees(base_rot_z):.2f}")
+        else:
+             base_rot_z = obj.rotation_euler.z
+             print(f"DEBUG: Read Object Rotation: {math.degrees(base_rot_z):.2f}")
+        
+        # Logic for "Return to Start"
+        start_delta_rot = orientation_offset
+        cycle_period = 600
+        return_duration = 120 # Duration (frames) to steer back
         
         for f in range(1 + key_interval, total_frames, key_interval):
-            # A. Random Turn
-            turn = math.radians(random.uniform(-10, 10))
-            current_delta_angle += turn
             
-            # B. Move Forward
-            # Direction is based on Base Rotation + Delta Angle.
-            # Ideally, we just compute forward based on Delta Angle, 
-            # and the Base Rotation rotates the whole path.
-            # So forward = (cos(delta), sin(delta))
+            # Determine if we should steer back to start
+            # Every 600 frames, for a brief window
+            # e.g., if (f % 600) < 120
+            time_in_cycle = f % cycle_period
             
-            forward_vec = Vector((math.cos(current_delta_angle), math.sin(current_delta_angle), 0))
+            if time_in_cycle < return_duration and f > 100:
+                # Steer towards start_delta_rot
+                target = start_delta_rot
+                curr = current_delta_rot
+                diff = target - curr
+                # Normalize -pi to pi
+                while diff > math.pi: diff -= 2*math.pi
+                while diff < -math.pi: diff += 2*math.pi
+                
+                # Apply strong bias
+                max_turn = math.radians(20) # Sharper turn to return
+                if abs(diff) < max_turn:
+                    turn = diff
+                else:
+                    turn = max_turn if diff > 0 else -max_turn
+            else:
+                # Normal Random Wander
+                turn = math.radians(random.uniform(-10, 10))
+
+            current_delta_rot += turn
+            
+            # B. Move Forward in World Space
+            # Direction = Base Rotation + Delta Rotation
+            # This ensures we walk "Forward" relative to how the spider is facing
+            move_angle = base_rot_z + current_delta_rot
+            
+            # Calculate World Space vector from Angle
+            # Assuming +X is 0 radians. 
+            # If the spider "Forward" is -Y (270 deg / pi*1.5)
+            # We added 'orientation_offset = pi' above. 
+            # So if base=0, rot=pi. Angle=pi (+X? No pi is -X).
+            # If offset=pi, forward is -X?
+            # Let's trust the math.pi offset works for the model alignment.
+            
+            forward_vec = Vector((math.cos(move_angle), math.sin(move_angle), 0))
             
             distance = speed_per_frame * key_interval
             current_delta_pos += forward_vec * distance
             
             # C. Set & Keyframe Deltas
             obj.delta_location = current_delta_pos
-            obj.delta_rotation_euler.z = current_delta_angle
+            obj.delta_rotation_euler.z = current_delta_rot
             
             obj.keyframe_insert(data_path="delta_location", frame=f)
             obj.keyframe_insert(data_path="delta_rotation_euler", frame=f)
