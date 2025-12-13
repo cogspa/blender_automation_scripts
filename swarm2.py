@@ -233,9 +233,9 @@ def create_master_controller():
     for obj in bpy.data.objects:
         if obj.name.startswith("WalkPath"): 
             children_to_parent.append(obj)
-        # ADD IK_Targets to the hierarchy!
-        if obj.name.startswith("IK_Target"): 
-            children_to_parent.append(obj)
+        # NOTE: IK_Targets are constrained to WalkPath, which is parented.
+        # Parenting IK_Targets to master might cause double-transform or constraint conflicts.
+        # We rely on 'create_swarm' constraint recursion to duplicate them.
             
     # Direct parenting assignment (more reliable than operator)
     for child in children_to_parent:
@@ -572,6 +572,42 @@ def create_swarm(count=49, range_x=100, range_y=100):
         new_master.animation_data_clear() 
         for obj in bpy.context.selected_objects:
             if "IK_Target" in obj.name: obj.location = (0,0,0)
+            
+        # FIX CONSTRAINT REFERENCES (Smart Re-bind by Rotation)
+        new_objects = bpy.context.selected_objects
+        local_paths = [o for o in new_objects if o.name.startswith("WalkPath")]
+        local_targets = [o for o in new_objects if "IK_Target" in o.name]
+        
+        for targ in local_targets:
+            best_path = None
+            
+            # ONE: Try Exact Component Name Suffix Match (e.g. Target.007 -> Path.007)
+            # This relies on Blender incrementing names consistently in a duplicate operation.
+            target_suffix = targ.name.split('.')[-1] if '.' in targ.name else ""
+            for path in local_paths:
+                path_suffix = path.name.split('.')[-1] if '.' in path.name else ""
+                if path_suffix == target_suffix:
+                    best_path = path
+                    break
+            
+            # TWO: Fallback to Rotation Match
+            if not best_path:
+                min_diff = 1000.0
+                t_rot = targ.rotation_euler.z % (2*math.pi)
+                for path in local_paths:
+                    p_rot = path.rotation_euler.z % (2*math.pi)
+                    diff = abs(p_rot - t_rot)
+                    if diff > math.pi: diff = (2*math.pi) - diff
+                    if diff < min_diff:
+                        min_diff = diff
+                        best_path = path if min_diff < 0.2 else None
+
+            # Bind 
+            if best_path: 
+                 for c in targ.constraints:
+                        if c.type == 'FOLLOW_PATH':
+                            c.target = best_path
+                            
         bpy.context.view_layer.update()
         create_pathless_walk(new_master.name, explicit_start_angle=rz)
         for obj in bpy.context.selected_objects:
