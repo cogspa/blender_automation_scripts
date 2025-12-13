@@ -30,6 +30,34 @@ def raycast_obstacles_world(origin: Vector, direction: Vector, max_dist: float =
 # ==================================================================================================
 # MODULE 1: SPIDER ASSEMBLY (Body, Leg 0, Rig, IK)
 # ==================================================================================================
+
+def fix_material_texture(obj):
+    """
+    Ensures the object has a material using the valid 'boxhead' image.
+    Handles duplicates like boxhead2.jpg vs boxhead2.jpg.001.
+    """
+    valid_img = None
+    # 1. Look for loaded 'boxhead' with data
+    for img in bpy.data.images:
+        if "boxhead" in img.name and img.has_data:
+            valid_img = img
+            break
+            
+    # 2. Fallback to any valid image if needed
+    if not valid_img:
+        for img in bpy.data.images:
+            if img.type == 'IMAGE' and img.has_data and img.name != "Render Result":
+                valid_img = img
+                break
+                
+    if valid_img and obj.data.materials:
+         mat = obj.data.materials[0]
+         if mat and mat.use_nodes:
+             for n in mat.node_tree.nodes:
+                 if n.type == 'TEX_IMAGE':
+                     n.image = valid_img
+                     print(f"Auto-Fixed Texture on {obj.name} -> {valid_img.name}")
+
 def create_spider_assembly(clean_scene=True):
     if bpy.context.object and bpy.context.object.mode != 'OBJECT':
         bpy.ops.object.mode_set(mode='OBJECT')
@@ -66,6 +94,8 @@ def create_spider_assembly(clean_scene=True):
                 bpy.context.view_layer.objects.active = body
                 body.select_set(True)
                 imported = True
+                # Auto-Fix broken texture references from .blend import
+                fix_material_texture(body)
         except: pass
     
     if not imported:
