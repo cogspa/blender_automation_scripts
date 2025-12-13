@@ -224,18 +224,27 @@ def create_master_controller():
         master.name = "character_controller"
         master.empty_display_size = 5.0
 
+    # Use DIRECT parenting instead of bpy.ops.object.parent_set
     children_to_parent = []
-    if "Direction_Controller" in bpy.data.objects: children_to_parent.append(bpy.data.objects["Direction_Controller"])
-    if "Spider_Body" in bpy.data.objects: children_to_parent.append(bpy.data.objects["Spider_Body"])
+    if "Direction_Controller" in bpy.data.objects: 
+        children_to_parent.append(bpy.data.objects["Direction_Controller"])
+    if "Spider_Body" in bpy.data.objects: 
+        children_to_parent.append(bpy.data.objects["Spider_Body"])
     for obj in bpy.data.objects:
-        if obj.name.startswith("WalkPath"): children_to_parent.append(obj)
+        if obj.name.startswith("WalkPath"): 
+            children_to_parent.append(obj)
+        # ADD IK_Targets to the hierarchy!
+        if obj.name.startswith("IK_Target"): 
+            children_to_parent.append(obj)
             
-    if not children_to_parent: return
-    bpy.ops.object.select_all(action='DESELECT')
-    for child in children_to_parent: child.select_set(True)
-    master.select_set(True)
-    bpy.context.view_layer.objects.active = master
-    bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
+    # Direct parenting assignment (more reliable than operator)
+    for child in children_to_parent:
+        if child.parent != master:
+            child.parent = master
+            child.matrix_parent_inverse = master.matrix_world.inverted()
+    
+    # Force update
+    bpy.context.view_layer.update()
 
 # ==================================================================================================
 # MODULE 4: BODY NOISE
@@ -453,6 +462,15 @@ def build_spider():
     offset_gait_logic()
     create_steering_logic()
     create_master_controller()
+    
+    # Verify and Force Parenting for Duplication Stability
+    if "character_controller" in bpy.data.objects and "Spider_Body" in bpy.data.objects:
+        master = bpy.data.objects["character_controller"]
+        body = bpy.data.objects["Spider_Body"]
+        if body.parent != master:
+            body.parent = master
+            body.matrix_parent_inverse = master.matrix_world.inverted()
+            
     add_body_noise()
 
 # ==================================================================================================
@@ -464,8 +482,25 @@ def create_swarm(count=49, range_x=100, range_y=100):
         build_spider()
         if source_name not in bpy.data.objects: return
 
-    spawned_positions = []
+    # FORCE view layer update to ensure parenting is resolved
+    bpy.context.view_layer.update()
+    
     source_obj = bpy.data.objects[source_name]
+    
+    # DEBUG: Verify children exist
+    print(f"Source children BEFORE loop: {[c.name for c in source_obj.children]}")
+    
+    # If Spider_Body not a child, fix it now
+    if "Spider_Body" in bpy.data.objects:
+        body = bpy.data.objects["Spider_Body"]
+        if body.parent != source_obj:
+            print("WARNING: Spider_Body not parented! Fixing...")
+            body.parent = source_obj
+            body.matrix_parent_inverse = source_obj.matrix_world.inverted()
+            bpy.context.view_layer.update()
+            print(f"Source children AFTER fix: {[c.name for c in source_obj.children]}")
+
+    spawned_positions = []
     spawned_positions.append(source_obj.location.to_2d())
     create_pathless_walk(source_name)
     
@@ -485,6 +520,16 @@ def create_swarm(count=49, range_x=100, range_y=100):
                     objects_to_dup.add(child)
                     recurse(child)
         recurse(source_master)
+        
+        if i == 0:
+            msg = f"DEBUG: Source Master Children: {[c.name for c in source_master.children]}\n"
+            msg += f"DEBUG: Objects to Dup ({len(objects_to_dup)}): {[o.name for o in objects_to_dup]}\n"
+            print(msg)
+            try:
+                with open("/Users/joem/.gemini/antigravity/scratch/blender_bridge/swarm_debug_log.txt", "w") as f:
+                    f.write(msg)
+            except: pass
+
         base_list = list(objects_to_dup)
         for obj in base_list:
             for c in obj.constraints:
